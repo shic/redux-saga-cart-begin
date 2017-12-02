@@ -17,11 +17,17 @@ import {
 } from '../selectors'
 
 
+function* checkout() {
+    const user = yield select(currentUserSelector);
+
+}
+
+
 export function* checkoutSaga () {
     while (true){
         const isCheckingOut = yield take(TOGGLE_CHECKING_OUT);
         if (isCheckingOut){
-            
+            yield call(checkout);
         }
     }
 
