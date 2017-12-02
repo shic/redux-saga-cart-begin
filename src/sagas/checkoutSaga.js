@@ -17,9 +17,24 @@ import {
 } from '../selectors'
 
 
+function* checkQuantity(user) {
+    const response = yield fetch(`http://localhost:8081/cart/validate/${user.get('id')}`);
+    const {validated} = yield response.json();
+    return validated;
+}
+
+
 function* checkout() {
     const user = yield select(currentUserSelector);
 
+    //checkQuantity
+    yield put(setCheckoutPhase(QUANTITY_VERIFICATION_CHECKOUT_PHASE));
+    const quantityValidated = yield call(checkQuantity,user)
+    if(!quantityValidated){
+        yield put(setCheckoutPhase(ERROR_CHECKOUT_PHASE));
+        return;
+    }
+    console.info('Validated cart');
 }
 
 
