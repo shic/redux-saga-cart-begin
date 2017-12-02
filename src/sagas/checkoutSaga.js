@@ -24,6 +24,13 @@ function* checkQuantity(user) {
 }
 
 
+function* checkCreditCard(user) {
+    const response = yield fetch(`http://localhost:8081/card/validate/${user.get('id')}`);
+    const {validated} = yield response.json();
+    return validated;
+}
+
+
 function* checkout() {
     const user = yield select(currentUserSelector);
 
@@ -34,7 +41,18 @@ function* checkout() {
         yield put(setCheckoutPhase(ERROR_CHECKOUT_PHASE));
         return;
     }
-    console.info('Validated cart');
+    console.info('Validated checkQuantity');
+
+    //checkCreditCard
+    yield put(setCheckoutPhase(CREDIT_VALIDATION_CHECKOUT_PHASE));
+    const creditCardValidated = yield call(checkCreditCard,user)
+    if(!creditCardValidated){
+        yield put(setCheckoutPhase(ERROR_CHECKOUT_PHASE));
+        return;
+    }
+
+    yield put(setCheckoutPhase(PURCHASE_FINALIZATION_CHECKOUT_PHASE));
+
 }
 
 
