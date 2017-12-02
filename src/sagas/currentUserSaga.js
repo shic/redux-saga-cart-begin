@@ -9,6 +9,9 @@ import {
 //Get current user (get it once only)
 export function* currentUserSaga () {
     const { id }  = yield take(GET_CURRENT_USER_INFO);
+    const response = yield call(fetch,`http://localhost:8081/user/${id}`);
+    console.info('response', response);
 
-    console.info('ID', id);
+    const data = yield apply(response, response.json);
+    console.info('data', data);
 }
